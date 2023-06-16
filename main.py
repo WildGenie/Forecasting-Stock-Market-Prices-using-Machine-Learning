@@ -38,7 +38,7 @@ scaler = MinMaxScaler(feature_range=(0, 1))
 scaled_data = scaler.fit_transform(dataset)
 
 # Prepare the training data
-train_data = scaled_data[0:int(training_data_len), :]
+train_data = scaled_data[0:training_data_len, :]
 x_train = []
 y_train = []
 
@@ -72,13 +72,9 @@ history = model.fit(x_train, y_train, validation_split=0.1, batch_size=1, epochs
 
 # Prepare the testing data
 test_data = scaled_data[training_data_len - 60:, :]
-x_test = []
 y_test = dataset[training_data_len:, :]
 
-# Create testing sequences
-for i in range(60, len(test_data)):
-    x_test.append(test_data[i-60:i, 0])
-
+x_test = [test_data[i-60:i, 0] for i in range(60, len(test_data))]
 # Convert the testing data to a numpy array and reshape for LSTM input
 x_test = np.array(x_test)
 x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))

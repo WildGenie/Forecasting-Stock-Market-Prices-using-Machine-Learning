@@ -19,8 +19,7 @@ os.environ['MLFLOW_TRACKING_URI'] = 'file://' + mlflow_dir
 
 # Define the experiment
 def get_experiment_id(experiment_name):
-    experiment = mlflow.get_experiment_by_name(experiment_name)
-    if experiment:
+    if experiment := mlflow.get_experiment_by_name(experiment_name):
         return experiment.experiment_id
     else:
         return mlflow.create_experiment(experiment_name)
@@ -71,7 +70,7 @@ def preprocess_data():
         scaled_data = scaler.fit_transform(dataset)
 
         # Prepare the training data
-        train_data = scaled_data[0:int(training_data_len), :]
+        train_data = scaled_data[0:training_data_len, :]
         x_train = []
         y_train = []
 
@@ -157,16 +156,12 @@ def test_model():
 
         # Load the trained model
         model = load_model(os.path.join(data_dir_path, 'PSX_Model.h5'))
-        
+
         training_data_len = int(np.ceil(len(dataset) * 0.95))
 
         # Prepare the test data
         test_data = scaled_data[training_data_len - 60:, :]
-        x_test = []
-
-        for i in range(60, len(test_data)):
-            x_test.append(test_data[i-60:i, 0])
-
+        x_test = [test_data[i-60:i, 0] for i in range(60, len(test_data))]
         x_test = np.array(x_test)
         x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
 
